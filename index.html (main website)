@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Zainabinta Academy</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+<h1>ZAINABINTA ACADEMY</h1>
+
+<div class="card">
+<h2>Student Portal</h2>
+<a href="/student"><button>Enter Student Portal</button></a>
+</div>
+
+<div class="card">
+<h2>Admin Portal</h2>
+<a href="/admin"><button>Enter Admin Portal</button></a>
+</div>
+
+<div class="card">
+<h2>School Address</h2>
+<p>10B AFAMEFULA STREET ASABA DELTA STATE</p>
+<p>08034924442</p>
+<p>zainabinta.academyy@gmail.com</p>
+</div>
+
+</div>
+</body>
+</html>
