@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Student Portal</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+
+<h2>Student Login</h2>
+
+<div class="card">
+<input type="text" id="studentId" placeholder="Student ID">
+<input type="password" id="password" placeholder="Password">
+<button onclick="loginStudent()">Login</button>
+</div>
+
+<div class="card" id="resultSection" style="display:none;">
+<h3>Student Result</h3>
+<div id="studentInfo"></div>
+<button onclick="printResult()">Print Result</button>
+</div>
+
+</div>
+
+<script type="module" src="student.js"></script>
+</body>
+</html>
