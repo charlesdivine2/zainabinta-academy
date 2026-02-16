@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Portal</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+
+<h2>Admin Login</h2>
+
+<div class="card">
+<input type="email" id="adminEmail" placeholder="Admin Email">
+<input type="password" id="adminPassword" placeholder="Password">
+<button onclick="loginAdmin()">Login</button>
+</div>
+
+<div class="card" id="adminPanel" style="display:none;">
+<h3>Create Student</h3>
+<input type="text" id="newStudentId" placeholder="Student ID">
+<input type="password" id="newStudentPassword" placeholder="Password">
+<button onclick="createStudent()">Create Student</button>
+</div>
+
+</div>
+
+<script type="module" src="admin.js"></script>
+</body>
+</html>
