@@ -1,34 +1,35 @@
-import { auth, db } from "./firebase-config.js";
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-window.loginAdmin = async function() {
-  const email = document.getElementById("adminEmail").value;
-  const password = document.getElementById("adminPassword").value;
-
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-    document.getElementById("adminPanel").style.display = "block";
-  } catch {
-    alert("Admin Login Failed");
-  }
+// 🔥 Your Real Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyCTt6YCzfF6GYHzMHaKcAUCykoK0c9co5o",
+  authDomain: "zainabinta-academy-3a82a.firebaseapp.com",
+  projectId: "zainabinta-academy-3a82a",
+  storageBucket: "zainabinta-academy-3a82a.appspot.com",
+  messagingSenderId: "864662579065",
+  appId: "1:864662579065:web:95efbd91b3e9c2c014b1a8"
 };
 
-window.createStudent = async function() {
-  const id = document.getElementById("newStudentId").value;
-  const password = document.getElementById("newStudentPassword").value;
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-  try {
-    await createUserWithEmailAndPassword(auth, id + "@school.com", password);
+// 🔐 Your Real Admin UID
+const ADMIN_UID = "i9a6Rex1V0MujP1AigQYt48jyE82";
 
-    await setDoc(doc(db, "students", id), {
-      studentId: id,
-      createdAt: new Date()
-    });
-
-    alert("Student Created Successfully");
-
-  } catch {
-    alert("Error creating student");
+// 🔒 Protect Admin Page
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    if (user.uid === ADMIN_UID) {
+      console.log("✅ Admin Verified");
+      document.getElementById("adminPanel").style.display = "block";
+    } else {
+      alert("❌ Access Denied");
+      window.location.href = "index.html";
+    }
+  } else {
+    window.location.href = "index.html";
   }
-};
+});
