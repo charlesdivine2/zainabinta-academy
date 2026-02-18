@@ -1,28 +1,91 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Student Portal</title>
-<link rel="stylesheet" href="style.css">
+  <title>Zainabinta Academy - Student</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+<div class="header">
+  <h2>ZAINABINTA ACADEMY - STUDENT PORTAL</h2>
+  <button onclick="logout()">Logout</button>
+</div>
+
 <div class="container">
 
-<h2>Student Login</h2>
+  <!-- LOGIN -->
+  <div id="studentLogin">
+    <h3>Student Login</h3>
+    <input type="email" id="studentEmail" placeholder="Email">
+    <input type="password" id="studentPassword" placeholder="Password">
+    <button onclick="loginStudent()">Login</button>
+  </div>
 
-<div class="card">
-<input type="text" id="studentId" placeholder="Student ID">
-<input type="password" id="password" placeholder="Password">
-<button onclick="loginStudent()">Login</button>
+  <!-- DASHBOARD -->
+  <div id="studentDashboard" style="display:none;">
+    <h3>Welcome</h3>
+    <p><strong>Name:</strong> <span id="sName"></span></p>
+    <p><strong>Email:</strong> <span id="sEmail"></span></p>
+    <p><strong>Class:</strong> <span id="sClass"></span></p>
+  </div>
+
 </div>
 
-<div class="card" id="resultSection" style="display:none;">
-<h3>Student Result</h3>
-<div id="studentInfo"></div>
-<button onclick="printResult()">Print Result</button>
-</div>
+<script type="module">
 
-</div>
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-<script type="module" src="student.js"></script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCTt6YCzfF6GYHzMHaKcAUCykoK0c9co5o",
+  authDomain: "zainabinta-academy-3a82a.firebaseapp.com",
+  projectId: "zainabinta-academy-3a82a",
+  storageBucket: "zainabinta-academy-3a82a.firebasestorage.app",
+  messagingSenderId: "864662579065",
+  appId: "1:864662579065:web:95efbd91b3e9c2c014b1a8"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// Login Student
+window.loginStudent = async function() {
+  const email = document.getElementById("studentEmail").value;
+  const password = document.getElementById("studentPassword").value;
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch (error) {
+    alert(error.message);
+  }
+};
+
+// Check Auth
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    document.getElementById("studentLogin").style.display = "none";
+    document.getElementById("studentDashboard").style.display = "block";
+
+    const docRef = doc(db, "students", user.uid);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      document.getElementById("sName").innerText = docSnap.data().name;
+      document.getElementById("sEmail").innerText = docSnap.data().email;
+      document.getElementById("sClass").innerText = docSnap.data().class;
+    }
+  }
+});
+
+// Logout
+window.logout = function() {
+  signOut(auth);
+  location.reload();
+};
+
+</script>
+
 </body>
 </html>
