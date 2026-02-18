@@ -1,120 +1,123 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zainabinta Academy - Admin Portal</title>
-
-<link rel="stylesheet" href="style.css">
-
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"></script>
-
-<script src="firebase-config.js"></script>
+  <title>Zainabinta Academy - Admin</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+<body>
 
-<body class="admin-bg">
+<div class="header">
+  <h2>ZAINABINTA ACADEMY - ADMIN PANEL</h2>
+  <button onclick="logout()">Logout</button>
+</div>
 
-<!-- HEADER -->
-<header class="top-bar">
-    <div class="logo-title">
-        <img src="logo.png" class="small-logo">
-        <h2>ZAINABINTA ACADEMY - Admin</h2>
-    </div>
-    <button onclick="logout()" class="logout-btn">Logout</button>
-</header>
+<div class="container">
 
-<!-- LOGIN SECTION -->
-<div id="loginSection" class="center-card">
+  <!-- LOGIN SECTION -->
+  <div id="adminLogin">
     <h3>Admin Login</h3>
     <input type="email" id="adminEmail" placeholder="Admin Email">
     <input type="password" id="adminPassword" placeholder="Password">
-    <button onclick="adminLogin()">Login</button>
-</div>
+    <button onclick="loginAdmin()">Login</button>
+  </div>
 
-<!-- DASHBOARD -->
-<div id="adminDashboard" style="display:none;" class="dashboard">
-
+  <!-- DASHBOARD -->
+  <div id="adminDashboard" style="display:none;">
     <h3>Create Student Account</h3>
-    <input type="text" id="studentName" placeholder="Student Full Name">
+    <input type="text" id="studentName" placeholder="Full Name">
     <input type="email" id="studentEmail" placeholder="Student Email">
     <input type="password" id="studentPassword" placeholder="Temporary Password">
-
+    
     <select id="studentClass">
-        <option>Primary 2</option>
-        <option>Primary 3</option>
-        <option>Primary 4</option>
-        <option>Primary 5</option>
-        <option>Primary 6</option>
-        <option>JSS1</option>
-        <option>JSS2</option>
-        <option>JSS3</option>
-        <option>SS1</option>
-        <option>SS2</option>
-        <option>SS3</option>
+      <option>Primary 2</option>
+      <option>Primary 3</option>
+      <option>Primary 4</option>
+      <option>Primary 5</option>
+      <option>Primary 6</option>
+      <option>JSS1</option>
+      <option>JSS2</option>
+      <option>JSS3</option>
+      <option>SS1</option>
+      <option>SS2</option>
+      <option>SS3</option>
     </select>
 
     <button onclick="createStudent()">Create Student</button>
+  </div>
 
 </div>
 
-<script>
+<script type="module">
 
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCTt6YCzfF6GYHzMHaKcAUCykoK0c9co5o",
+  authDomain: "zainabinta-academy-3a82a.firebaseapp.com",
+  projectId: "zainabinta-academy-3a82a",
+  storageBucket: "zainabinta-academy-3a82a.firebasestorage.app",
+  messagingSenderId: "864662579065",
+  appId: "1:864662579065:web:95efbd91b3e9c2c014b1a8"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// Your Admin UID
 const ADMIN_UID = "i9a6Rex1V0MujP1AigQYt48jyE82";
 
-function adminLogin(){
-    const email = document.getElementById("adminEmail").value;
-    const password = document.getElementById("adminPassword").value;
+// Login Admin
+window.loginAdmin = async function() {
+  const email = document.getElementById("adminEmail").value;
+  const password = document.getElementById("adminPassword").value;
 
-    firebase.auth().signInWithEmailAndPassword(email, password)
-    .then((userCredential) => {
-        const user = userCredential.user;
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
 
-        if(user.uid === ADMIN_UID){
-            document.getElementById("loginSection").style.display = "none";
-            document.getElementById("adminDashboard").style.display = "block";
-        } else {
-            alert("Access Denied!");
-            logout();
-        }
-    })
-    .catch((error) => {
-        alert(error.message);
+    if (userCredential.user.uid === ADMIN_UID) {
+      document.getElementById("adminLogin").style.display = "none";
+      document.getElementById("adminDashboard").style.display = "block";
+    } else {
+      alert("Not authorized as admin.");
+      signOut(auth);
+    }
+
+  } catch (error) {
+    alert(error.message);
+  }
+};
+
+// Create Student
+window.createStudent = async function() {
+  const name = document.getElementById("studentName").value;
+  const email = document.getElementById("studentEmail").value;
+  const password = document.getElementById("studentPassword").value;
+  const studentClass = document.getElementById("studentClass").value;
+
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+
+    await setDoc(doc(db, "students", userCredential.user.uid), {
+      name: name,
+      email: email,
+      class: studentClass,
+      createdAt: new Date()
     });
-}
 
-function createStudent(){
-    const name = document.getElementById("studentName").value;
-    const email = document.getElementById("studentEmail").value;
-    const password = document.getElementById("studentPassword").value;
-    const studentClass = document.getElementById("studentClass").value;
+    alert("Student Created Successfully!");
+  } catch (error) {
+    alert(error.message);
+  }
+};
 
-    firebase.auth().createUserWithEmailAndPassword(email, password)
-    .then((userCredential) => {
-        const user = userCredential.user;
-
-        return firebase.firestore().collection("students").doc(user.uid).set({
-            name: name,
-            email: email,
-            class: studentClass,
-            createdAt: new Date()
-        });
-    })
-    .then(() => {
-        alert("Student Created Successfully");
-    })
-    .catch((error) => {
-        alert(error.message);
-    });
-}
-
-function logout(){
-    firebase.auth().signOut().then(() => {
-        window.location.href = "index.html";
-    });
-}
+// Logout
+window.logout = function() {
+  signOut(auth);
+  location.reload();
+};
 
 </script>
 
